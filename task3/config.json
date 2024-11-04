@@ -1,0 +1,8 @@
+{
+    "recognizers": {
+        "EmailRecognizer": true,
+        "PhoneRecognizer": true,
+        "CreditCardRecognizer": false,
+        "NameRecognizer": true
+    }
+}
