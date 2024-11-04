@@ -1,0 +1,47 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# pytest cache and test artifacts
+.pytest_cache/
+.cache/
+.tox/
+*.log
+*.coverage
+coverage.xml
+htmlcov/
+*.cover
+nosetests.xml
+test_results/
+tests/__pycache__/
+tests/*.log
+
+# Environment
+.env
+.venv
+
+# Python Virtual Environment
+env/
+venv/
+
+# Ruff Formatter
+.ruff_cache/
+
+# VSCode settings
+.vscode/
+
+# Ignore local configuration files
+*.local
+
+# Ignore any temporary or personal files
+*.swp
+*.bak
+*.tmp
