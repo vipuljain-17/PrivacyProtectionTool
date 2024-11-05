@@ -82,9 +82,7 @@ Create a JSON configuration file (e.g., config.json):
 ```
 {
     "message": "Welcome to Privacy Tool",
-    "data": {
-        "version": "1.0"
-    }
+    "version": "1.0"
 }
 ```
 
@@ -102,15 +100,13 @@ Create a JSON configuration file (e.g., config.json):
 ```
 {
     "message": "Success",
-    "data": {
-        "entities": [
-            {
-                "type": "EMAIL_ADDRESS",
-                "position": [10, 30],
-                "text": "example@email.com"
-            }
-        ]
-    }
+    "entities": [
+        {
+            "type": "EMAIL_ADDRESS",
+            "position": [10, 30],
+            "text": "example@email.com"
+        }
+    ]
 }
 ```
 
@@ -129,16 +125,14 @@ Create a JSON configuration file (e.g., config.json):
 ```
 {
     "message": "Success",
-    "data": {
-        "entities": [
-            {
-                "type": "EMAIL_ADDRESS",
-                "position": [10, 30],
-                "text": "example@email.com"
-            }
-        ],
-        "anonymized_output": "Text with <EMAIL_ADDRESS>"
-    }
+    "entities": [
+        {
+            "type": "EMAIL_ADDRESS",
+            "position": [10, 30],
+            "text": "example@email.com"
+        }
+    ],
+    "anonymized_output": "Text with <EMAIL_ADDRESS>"
 }
 ```
 
@@ -151,6 +145,7 @@ import requests
 url = "http://localhost:5000/scan"
 payload = {
     "scan": "My email is john@example.com and phone is 123-456-7890"
+    # "config": <path to the config> # Optional
 }
 
 response = requests.post(url, json=payload)
@@ -165,6 +160,7 @@ url = "http://localhost:5000/anonymize"
 payload = {
     "anonymize": "My email is john@example.com and phone is 123-456-7890",
     "method": "mask"
+    # "config": <path to the config> # Optional
 }
 
 response = requests.post(url, json=payload)
@@ -180,8 +176,7 @@ The API uses standard HTTP status codes and provides detailed error messages:
 Error responses follow this format:
 ```
 {
-    "message": "Error description",
-    "status_code": 400
+    "message": "Error description"
 }
 ```
 
