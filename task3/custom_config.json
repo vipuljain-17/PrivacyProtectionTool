@@ -1,0 +1,39 @@
+{
+    "recognizers": {
+        "EmailRecognizer": true,
+        "PhoneRecognizer": true,
+        "CreditCardRecognizer": false,
+        "NameRecognizer": false,
+        "ZipCodeRecognizer": {
+            "enabled": true,
+            "name": "Zip Code Recognizer",
+            "supported_language": "en",
+            "supported_entity": "ZIP",
+            "context": [
+                "zip",
+                "code"
+            ],
+            "patterns": [
+                {
+                    "name": "zip code (weak)",
+                    "regex": "(\\b\\d{5}(?:\\-\\d{4})?\\b)",
+                    "score": 0.01
+                }
+            ]
+        },
+        "TitlesRecognizer": {
+            "enabled": true,
+            "name": "Titles Recognizer",
+            "supported_language": "en",
+            "supported_entity": "TITLE",
+            "deny_list": [
+                "Mr.",
+                "Mrs.",
+                "Ms.",
+                "Miss",
+                "Dr.",
+                "Prof."
+            ]
+        }
+    }
+}

@@ -3,7 +3,10 @@ import json
 from pathlib import Path
 import importlib
 from presidio_analyzer import RecognizerRegistry
-from presidio_analyzer.predefined_recognizers import PREDEFINED_RECOGNIZERS
+from presidio_analyzer.predefined_recognizers import (
+    __all__ as DEFAULT_PREDEFINED_RECOGNIZERS,
+    SpacyRecognizer,
+)
 
 
 class ConfigLoader:
@@ -11,20 +14,13 @@ class ConfigLoader:
     Loads configuration from a json file or defaults to a configuration with the predefined recognizers.
     """
 
-    DEFAULT_RECOGNIZERS: Dict[str, bool] = {
-        "EmailRecognizer": True,
-        "PhoneRecognizer": True,
-        "CreditCardRecognizer": True,
-        "NameRecognizer": True,
-    }
-
     def __init__(self, config_path: Optional[Path] = None):
         self.config: Dict[str, Dict[str, bool]] = self.__load_config(config_path)
 
     def __load_config(self, config_path: Optional[Path]) -> Dict[str, Dict[str, bool]]:
         if not config_path:
             print("No config path provided. Using default recognizers.")
-            return {"recognizers": self.DEFAULT_RECOGNIZERS}
+            return {}
 
         try:
             with open(config_path, "r") as f:
@@ -34,7 +30,7 @@ class ConfigLoader:
         except (FileNotFoundError, json.JSONDecodeError):
             print("Configuration file not found or invalid. Using default recognizers.")
 
-        return {"recognizers": self.DEFAULT_RECOGNIZERS}
+        return {}
 
     def _validate_config(self, config: Dict[str, Dict[str, bool]]) -> None:
         if "recognizers" not in config:
@@ -42,8 +38,9 @@ class ConfigLoader:
 
         for recognizer_name in config["recognizers"]:
             if (
-                recognizer_name not in PREDEFINED_RECOGNIZERS
+                recognizer_name not in DEFAULT_PREDEFINED_RECOGNIZERS
                 and recognizer_name != "NameRecognizer"
+                and not config["recognizers"].get(recognizer_name)
             ):
                 raise ValueError(f"Unknown recognizer: {recognizer_name}")
 
@@ -61,12 +58,21 @@ class PIIRegistry:
 
     def __init__(self, config: str):
         registry_config: Dict[str, bool] = ConfigLoader(config).get_recognizers_config()
-        self.registry: RecognizerRegistry = self._create_custom_registry(
-            registry_config
-        )
+        if registry_config:
+            self.registry: RecognizerRegistry = self._create_custom_registry(
+                registry_config
+            )
+        else:
+            self.registry: RecognizerRegistry = self._load_default_predefined_registry()
 
     def get_registry(self) -> RecognizerRegistry:
         return self.registry
+
+    def _load_default_predefined_registry(self):
+        registry = RecognizerRegistry()
+        registry.load_predefined_recognizers()
+        # registry.add_recognizer(SpacyRecognizer())
+        return registry
 
     def _create_custom_registry(
         self, registry_config: Dict[str, bool]
@@ -82,11 +88,18 @@ class PIIRegistry:
                         )
                         continue
 
-                    registry.add_recognizer(self._import_recognizer(recognizer_name))
-                except KeyError:
+                    elif isinstance(enabled, dict) and enabled["enabled"]:
+                        enabled.pop("enabled")
+                        registry.add_pattern_recognizer_from_dict(enabled)
+                    else:
+                        registry.add_recognizer(
+                            self._import_recognizer(recognizer_name)
+                        )
+                except Exception:
                     print(
                         f"Error while fetching the registry for the recognizer: {recognizer_name}"
                     )
+                    raise
 
         return registry
 
