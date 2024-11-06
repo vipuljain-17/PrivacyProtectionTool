@@ -8,12 +8,7 @@ from task3.config_schema import ConfigLoader, PIIRegistry
 def test_config_loader_default():
     config_loader = ConfigLoader()
     config = config_loader.get_recognizers_config()
-    assert config == {
-        "EmailRecognizer": True,
-        "PhoneRecognizer": True,
-        "CreditCardRecognizer": True,
-        "NameRecognizer": True,
-    }
+    assert config is None
 
 def test_config_loader_custom_config_file(tmp_path):
     config_data = {

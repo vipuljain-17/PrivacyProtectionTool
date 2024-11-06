@@ -51,12 +51,9 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 The application uses a configuration system for PII recognizers. You can either use the default configuration or provide a custom one.
 
 #### Default Configuration
-The default configuration enables the following recognizers:
+The default configuration enables all the predefined recognizers.
 
-- Email Recognition
-- Phone Number Recognition
-- Credit Card Number Recognition
-- Name Recognition (via Spacy)
+Refer to this [supported_entities](https://microsoft.github.io/presidio/supported_entities/) to find more.
 
 #### Custom Configuration
 
@@ -67,8 +64,39 @@ Create a JSON configuration file (e.g., config.json):
         "EmailRecognizer": true,
         "PhoneRecognizer": true,
         "CreditCardRecognizer": true,
-        "NameRecognizer": true
+        "NameRecognizer": true, //Uses SpacyRecognizer for it.
         // Add other pre-defined recognizers as needed
+        "ZipCodeRecognizer": {
+            "enabled": true,
+            "name": "Zip Code Recognizer",
+            "supported_language": "en",
+            "supported_entity": "ZIP",
+            "context": [
+                "zip",
+                "code"
+            ],
+            "patterns": [
+                {
+                    "name": "zip code (weak)",
+                    "regex": "(\\b\\d{5}(?:\\-\\d{4})?\\b)",
+                    "score": 0.01
+                }
+            ]
+        },
+        "TitlesRecognizer": {
+            "enabled": true,
+            "name": "Titles Recognizer",
+            "supported_language": "en",
+            "supported_entity": "TITLE",
+            "deny_list": [
+                "Mr.",
+                "Mrs.",
+                "Ms.",
+                "Miss",
+                "Dr.",
+                "Prof."
+            ]
+        }
     }
 }
 ```
